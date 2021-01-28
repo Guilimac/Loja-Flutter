@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:loja_virtual/models/user_model.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-class SignupScreen extends StatelessWidget {
+
+class SignupScreen extends StatefulWidget {
+  @override
+  _SignupScreenState createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
+  final addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -9,69 +22,101 @@ class SignupScreen extends StatelessWidget {
         title: Text("Criar Conta"),
         centerTitle: true,
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            TextFormField(
-              decoration: InputDecoration(
-                  hintText: "Nome Completo"
-              ),
-              validator: (text){
-                if(text.isEmpty) return "Nome inválido";
-              },
-            ),
-            SizedBox(height: 16,),
-            TextFormField(
-              decoration: InputDecoration(
-                  hintText: "E-mail"
-              ),
-              keyboardType: TextInputType.emailAddress,
-              validator: (text){
-                if(text.isEmpty || !text.contains("@")) return "E-mail inválido";
-              },
-            ),
-            SizedBox(height: 16,),
-            TextFormField(
-              decoration: InputDecoration(
-                  hintText: "Senha"
-              ),
-              obscureText: true,
-              validator: (text){
-                if(text.isEmpty || text.length < 6) return "Senha inválida";
-              },
-            ),
-            SizedBox(height: 16,),
-            TextFormField(
-              decoration: InputDecoration(
-                  hintText: "Endereço"
-              ),
-              validator: (text){
-                if(text.isEmpty) return "Endereço inválida";
-              },
-            ),
-            SizedBox(height: 16,),
-            SizedBox(
-              height: 44,
-              child: RaisedButton(
-                onPressed: (){
-                  if(_formKey.currentState.validate()){
-
-                  }
-                },
-                child: Text("Criar Conta",
-                  style: TextStyle(
-                      fontSize: 18
+      body: ScopedModelDescendant<UserModel>(
+          builder: (context,child,model){
+            if (model.isLoading)
+              return Center(child: CircularProgressIndicator(),);
+            return Form(
+              key: _formKey,
+              child: ListView(
+                padding: EdgeInsets.all(16),
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                        hintText: "Nome Completo"
+                    ),
+                    validator: (text){
+                      if(text.isEmpty) return "Nome inválido";
+                    },
                   ),
-                ),
-                textColor: Colors.white,
-                color: Theme.of(context).primaryColor,
+                  SizedBox(height: 16,),
+                  TextFormField(
+                    controller: emailController
+                    ,
+                    decoration: InputDecoration(
+                        hintText: "E-mail"
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (text){
+                      if(text.isEmpty || !text.contains("@")) return "E-mail inválido";
+                    },
+                  ),
+                  SizedBox(height: 16,),
+                  TextFormField(
+                    controller: passController,
+                    decoration: InputDecoration(
+                        hintText: "Senha"
+                    ),
+                    obscureText: true,
+                    validator: (text){
+                      if(text.isEmpty || text.length < 6) return "Senha inválida";
+                    },
+                  ),
+                  SizedBox(height: 16,),
+                  TextFormField(
+                    controller: addressController,
+                    decoration: InputDecoration(
+                        hintText: "Endereço"
+                    ),
+                    validator: (text){
+                      if(text.isEmpty) return "Endereço inválida";
+                    },
+                  ),
+                  SizedBox(height: 16,),
+                  SizedBox(
+                    height: 44,
+                    child: RaisedButton(
+                      onPressed: (){
+                        if(_formKey.currentState.validate()){
+
+                          Map<String,dynamic> userData = {
+                            "name": nameController.text,
+                            "email": emailController.text,
+                            "address": addressController.text
+                          };
+
+                          model.signUp(
+                              userData: userData,
+                              pass: passController.text,
+                              onSuccess: _onSuccess,
+                              onFail: _onFail
+                          );
+                        }
+                      },
+                      child: Text("Criar Conta",
+                        style: TextStyle(
+                            fontSize: 18
+                        ),
+                      ),
+                      textColor: Colors.white,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
+            );
+          }
       ),
-    );;
+    );
+  }
+  void _onSuccess(){
+
+  }
+  void _onFail(){
+
   }
 }
+
+
+
