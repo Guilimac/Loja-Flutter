@@ -3,23 +3,32 @@ import 'package:loja_virtual/models/user_model.dart';
 import 'package:loja_virtual/screens/signup_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
+  final _scafoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scafoldKey,
       appBar: AppBar(
         title: Text("Entrar"),
         centerTitle: true,
         actions: [
           FlatButton(
-              onPressed: (){
-                Navigator.of(context).pushReplacement(
+            onPressed: (){
+              Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context)=>SignupScreen())
-                );
-              },
-              child: Text("Criar Conta", style: TextStyle(fontSize: 15),),
-              textColor: Colors.white,
+              );
+            },
+            child: Text("Criar Conta", style: TextStyle(fontSize: 15),),
+            textColor: Colors.white,
           )
         ],
       ),
@@ -33,6 +42,7 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.all(16),
               children: [
                 TextFormField(
+                  controller: emailController,
                   decoration: InputDecoration(
                       hintText: "E-mail"
                   ),
@@ -43,6 +53,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16,),
                 TextFormField(
+                  controller: passController,
                   decoration: InputDecoration(
                       hintText: "Senha"
                   ),
@@ -66,9 +77,11 @@ class LoginScreen extends StatelessWidget {
                   child: RaisedButton(
                     onPressed: (){
                       if(_formKey.currentState.validate()){
-
+                        model.signIn(email: emailController.text, pass: passController.text
+                            , onSuccess: _onSuccess,
+                            onFail: _onFail);
                       }
-                      model.signIn();
+
                     },
                     child: Text("Entrar",
                       style: TextStyle(
@@ -86,4 +99,16 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _onSuccess(){
+    Navigator.of(context).pop();
+  }
+  void _onFail(){
+    _scafoldKey.currentState.showSnackBar(
+        SnackBar(content: Text("Falha ao efetuar o Login"),
+          backgroundColor: Colors.redAccent,
+          duration: Duration(seconds: 2),)
+    );
+  }
 }
+
