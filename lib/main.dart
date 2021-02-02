@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
               model: CartModel(model),
               child: MaterialApp(
                 title: "Loja Virtual",
-                theme: ThemeData(
+                theme:ThemeData(
                     primarySwatch: Colors.blue,
                     primaryColor: Color.fromARGB(255, 4, 125, 141)
                 ),
